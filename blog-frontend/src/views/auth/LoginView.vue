@@ -8,6 +8,13 @@
           </v-toolbar>
 
           <v-card-text>
+            <v-alert type="info" variant="tonal" class="mb-6 text-center" density="compact">
+              <span class="font-weight-bold">Acceso de Administrador (DEMO)</span>
+              <v-divider class="my-1"></v-divider>
+              <p class="mt-1 mb-0 text-caption">Email: {{ DEMO_EMAIL }}</p>
+              <p class="mb-0 text-caption">Contraseña: {{ DEMO_PASSWORD }}</p>
+            </v-alert>
+
             <v-form ref="form" v-model="valid" @submit.prevent="handleLogin">
               <v-text-field
                 v-model="email"
@@ -70,6 +77,10 @@ const valid = ref(false)
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
+
+// --- Credenciales Demo (Constantes para mostrar y usar) ---
+const DEMO_EMAIL = 'test@example.com'
+const DEMO_PASSWORD = '12345678'
 
 const emailRules = [
   (v) => !!v || 'El email es requerido',
