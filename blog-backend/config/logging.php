@@ -87,13 +87,11 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'handler' => env('LOG_PAPERTRAIL_HANDLER', SyslogUdpHandler::class),
             'handler_with' => [
-                'host' => env('PAPERTRAIL_URL'),
-                'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => env('PAPERTRAIL_URL') && env('PAPERTRAIL_PORT')
-            ? 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT')
-            : null,
-            ],
-            'processors' => [PsrLogMessageProcessor::class],
+                'host' => env('PAPERTRAIL_URL', 'localhost'),
+                'port' => env('PAPERTRAIL_PORT', 514),
+                'connectionString' => 'tls://'.(env('PAPERTRAIL_URL', 'localhost')).':'.(env('PAPERTRAIL_PORT', 514)),
+        ],
+    'processors' => [PsrLogMessageProcessor::class],
         ],
 
         'stderr' => [
