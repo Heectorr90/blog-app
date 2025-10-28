@@ -8,7 +8,7 @@ export const getImageUrl = (imagePath) => {
   }
 
   // Construir URL completa
-  const baseURL = 'http://localhost:8000'
+  const baseURL = import.meta.env.VITE_API_URL_HELPERS
   return `${baseURL}/storage/${imagePath}`
 }
 
