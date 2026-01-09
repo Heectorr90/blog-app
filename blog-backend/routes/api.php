@@ -1,10 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\ContactController;
+
+Route::options('{any}', function (Request $request) {
+    return response()->json([], 204);
+})->where('any', '.*');
 
 // Auth routes - públicas
 Route::post('auth/register', [AuthController::class, 'register']);
