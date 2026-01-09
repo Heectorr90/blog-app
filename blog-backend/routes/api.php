@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\ContactController;
 
 // Auth routes - públicas
 Route::post('auth/register', [AuthController::class, 'register']);
@@ -36,3 +37,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('categories/{id}', [CategoryController::class, 'update']);
     Route::delete('categories/{id}', [CategoryController::class, 'destroy']);
 });
+
+
+/*Rutas API para el Portafolio - Correo de contacto*/
+Route::post('contact', [ContactController::class, 'send']);
