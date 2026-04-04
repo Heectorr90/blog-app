@@ -29,11 +29,11 @@ const imageError = ref(false)
 
 const imageSrc = computed(() => {
   if (imageError.value) {
-    return getPlaceholderImage(400, 300, props.placeholder || 'Sin Imagen')
+    return getPlaceholderImage()
   }
-  return (
-    getImageUrl(props.image) || getPlaceholderImage(400, 300, props.placeholder || 'Sin Imagen')
-  )
+  const url = getImageUrl(props.image)
+
+  return url || getPlaceholderImage()
 })
 
 const handleError = () => {

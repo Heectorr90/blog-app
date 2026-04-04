@@ -89,26 +89,18 @@
           <v-card class="mb-4">
             <v-card-title class="text-h6">Imagen Destacada</v-card-title>
             <v-card-text>
-              <v-file-input
-                v-model="imageFile"
-                label="Seleccionar imagen"
-                prepend-icon="mdi-camera"
-                variant="outlined"
-                accept="image/*"
-                density="compact"
-                @change="previewImage"
-              ></v-file-input>
+              <v-btn color="primary" block @click="openMedia = true"> Seleccionar imagen </v-btn>
 
               <v-img
-                v-if="imagePreview"
-                :src="imagePreview"
+                v-if="article.media"
+                :src="article.media.url"
                 class="mt-4"
                 max-height="200"
                 cover
               ></v-img>
 
               <v-btn
-                v-if="imagePreview && !imageFile"
+                v-if="article.media_id"
                 color="error"
                 size="small"
                 variant="text"
@@ -119,7 +111,7 @@
               </v-btn>
             </v-card-text>
           </v-card>
-
+          <MediaLibrary v-model="openMedia" @select="setImage" />
           <!-- Acciones -->
           <v-card>
             <v-card-text>
@@ -154,7 +146,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import api from '@/plugins/axios'
-import { getImageUrl } from '@/plugins/helpers'
+import MediaLibrary from '@/components/MediaLibrary.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -163,9 +155,6 @@ const form = ref(null)
 const valid = ref(false)
 const saving = ref(false)
 const categories = ref([])
-const imageFile = ref(null)
-const imagePreview = ref(null)
-const imageToDelete = ref(false)
 
 const article = ref({
   title: '',
@@ -173,6 +162,7 @@ const article = ref({
   content: '',
   status: 'draft',
   category_id: null,
+  media_id: null,
   image: null,
 })
 
@@ -225,39 +215,20 @@ const loadCategories = async () => {
 const loadArticle = async () => {
   try {
     const response = await api.get(`/articles/${route.params.id}`)
+
     article.value = {
       title: response.data.title,
       excerpt: response.data.excerpt || '',
       content: response.data.content,
       status: response.data.status,
       category_id: response.data.category_id,
-      image: response.data.image,
-    }
-
-    if (response.data.image) {
-      imagePreview.value = getImageUrl(response.data.image)
+      media_id: response.data.media_id,
+      media: response.data.media || null,
     }
   } catch (error) {
     console.error('Error al cargar artículo:', error)
     showSnackbar('Error al cargar artículo', 'error')
   }
-}
-
-const previewImage = () => {
-  if (imageFile.value && imageFile.value.length > 0) {
-    const file = imageFile.value[0]
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      imagePreview.value = e.target.result
-    }
-    reader.readAsDataURL(file)
-  }
-}
-
-const removeImage = () => {
-  imagePreview.value = null
-  article.value.image = null
-  imageToDelete.value = true
 }
 
 const saveArticle = async () => {
@@ -268,39 +239,14 @@ const saveArticle = async () => {
     return
   }
 
+  saving.value = true
+
   try {
-    const formData = new FormData()
-    formData.append('title', article.value.title)
-    formData.append('excerpt', article.value.excerpt || '')
-    formData.append('content', article.value.content)
-    formData.append('status', article.value.status)
-    formData.append('category_id', article.value.category_id)
-
-    // Log de depuración: Confirmamos el objeto.
-    console.log('--- Depuración de Imagen (Estructura Corregida) ---')
-    console.log('imageFile.value:', imageFile.value)
-
-    if (imageFile.value && imageFile.value instanceof File) {
-      formData.append('image', imageFile.value)
-    } else if (imageToDelete.value) {
-      formData.append('remove_image', '1')
-    }
-
-    if (isEditMode.value) {
-      formData.append('_method', 'PUT')
-    }
-
-    const config = {
-      headers: {
-        'Content-Type': null,
-        Accept: 'application/json',
-      },
-    }
-
     const endpoint = isEditMode.value ? `/articles/${route.params.id}` : '/articles'
 
-    // 3. Ejecutar la petición con la nueva configuración
-    await api.post(endpoint, formData, config)
+    const method = isEditMode.value ? 'put' : 'post'
+
+    await api[method](endpoint, article.value)
 
     showSnackbar(
       isEditMode.value ? 'Artículo actualizado exitosamente' : 'Artículo creado exitosamente',
@@ -322,6 +268,18 @@ const showSnackbar = (message, color = 'success') => {
   snackbarMessage.value = message
   snackbarColor.value = color
   snackbar.value = true
+}
+
+const openMedia = ref(false)
+
+const setImage = (img) => {
+  article.value.media_id = img.id
+  article.value.media = img
+}
+
+const removeImage = () => {
+  article.value.media = null
+  article.value.media_id = null
 }
 </script>
 

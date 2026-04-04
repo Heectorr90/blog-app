@@ -9,10 +9,48 @@
 
           <v-card-text>
             <v-alert type="info" variant="tonal" class="mb-6 text-center" density="compact">
-              <span class="font-weight-bold">Acceso de Administrador (DEMO)</span>
-              <v-divider class="my-1"></v-divider>
-              <p class="mt-1 mb-0 text-caption">Email: {{ DEMO_EMAIL }}</p>
-              <p class="mb-0 text-caption">Contraseña: {{ DEMO_PASSWORD }}</p>
+              <div class="font-weight-bold">Acceso de Administrador (DEMO)</div>
+
+              <v-divider class="my-2"></v-divider>
+
+              <div class="d-flex flex-column ga-2 align-center">
+                <!-- EMAIL -->
+                <div class="d-flex align-center ga-2 flex-wrap justify-center">
+                  <span class="font-weight-medium">Email:</span>
+
+                  <v-chip size="small" class="font-mono">
+                    {{ DEMO_EMAIL }}
+                  </v-chip>
+
+                  <v-btn
+                    icon="mdi-content-copy"
+                    size="x-small"
+                    variant="text"
+                    @click="copy(DEMO_EMAIL)"
+                  />
+                </div>
+
+                <!-- PASSWORD -->
+                <div class="d-flex align-center ga-2 flex-wrap justify-center">
+                  <span class="font-weight-medium">Contraseña:</span>
+
+                  <v-chip size="small" class="font-mono">
+                    {{ DEMO_PASSWORD }}
+                  </v-chip>
+
+                  <v-btn
+                    icon="mdi-content-copy"
+                    size="x-small"
+                    variant="text"
+                    @click="copy(DEMO_PASSWORD)"
+                  />
+                </div>
+
+                <!-- BOTÓN DEMO -->
+                <v-btn variant="tonal" size="small" class="mt-1" @click="fillDemo">
+                  Usar cuenta demo
+                </v-btn>
+              </div>
             </v-alert>
 
             <v-form ref="form" v-model="valid" @submit.prevent="handleLogin">
@@ -64,6 +102,10 @@
       </v-col>
     </v-row>
   </v-container>
+
+  <v-snackbar v-model="snackbar" timeout="2000">
+    {{ snackbarText }}
+  </v-snackbar>
 </template>
 
 <script setup>
@@ -80,7 +122,9 @@ const showPassword = ref(false)
 
 // --- Credenciales Demo (Constantes para mostrar y usar) ---
 const DEMO_EMAIL = 'test@example.com'
-const DEMO_PASSWORD = '12345678'
+const DEMO_PASSWORD = '123456'
+const snackbar = ref(false)
+const snackbarText = ref('')
 
 const emailRules = [
   (v) => !!v || 'El email es requerido',
@@ -105,5 +149,20 @@ const handleLogin = async () => {
       console.error('Error al iniciar sesión:', error)
     }
   }
+}
+
+const copy = async (text) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    snackbar.value = true
+    snackbarText.value = 'Copiado al portapapeles'
+  } catch (err) {
+    console.error('Error al copiar:', err)
+  }
+}
+
+const fillDemo = () => {
+  email.value = DEMO_EMAIL
+  password.value = DEMO_PASSWORD
 }
 </script>

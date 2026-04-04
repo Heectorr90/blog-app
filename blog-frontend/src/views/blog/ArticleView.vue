@@ -19,8 +19,8 @@
 
         <v-card>
           <ArticleImage
-            v-if="article.image"
-            :image="article.image"
+            v-if="article.media"
+            :image="article.media.url"
             :placeholder="article.title"
             height="400"
           />

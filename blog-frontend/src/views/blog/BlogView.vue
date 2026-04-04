@@ -42,7 +42,7 @@
     <v-row v-else-if="articles.length > 0">
       <v-col v-for="article in articles" :key="article.id" cols="12" md="4">
         <v-card class="h-100" hover @click="goToArticle(article.id)">
-          <ArticleImage :image="article.image" :placeholder="article.title" height="200">
+          <ArticleImage :image="article.media?.url" :placeholder="article.title" height="200">
             <v-chip v-if="article.category" class="ma-2" color="primary" size="small">
               {{ article.category.name }}
             </v-chip>
